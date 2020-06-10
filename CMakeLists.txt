@@ -160,6 +160,8 @@ else()
     option(ENABLE_REMOTE "Enable remote capture" OFF)
 endif(WIN32)
 
+#set(ENABLE_REMOTE OFF)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     option(PCAP_SUPPORT_PACKET_RING "Enable Linux packet ring support" ON)
     option(BUILD_WITH_LIBNL "Build with libnl" ON)
@@ -250,10 +252,13 @@ if(WIN32)
         include_directories(${CMAKE_HOME_DIRECTORY}/../../Common)
     endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/../../Common)
 
-    find_package(Packet)
+
+    #find_package(Packet)
+
+    set(PACKET_FOUND TRUE)
     if(PACKET_FOUND)
         set(HAVE_PACKET32 TRUE)
-        include_directories(${PACKET_INCLUDE_DIRS})
+        #include_directories(${PACKET_INCLUDE_DIRS})
         #
         # Check whether we have the NPcap PacketIsLoopbackAdapter()
         # function.
@@ -427,6 +432,7 @@ endif()
 # that's been set, it skips the test, so we need different variables.
 #
 set(PCAP_LINK_LIBRARIES "")
+set(PCAP_LINK_LIBRARIES packet ${PCAP_LINK_LIBRARIES})
 include(CheckLibraryExists)
 if(WIN32)
     #
@@ -927,6 +933,7 @@ endif(WIN32)
 # Determine the main pcap-XXX.c file to use, and the libraries with
 # which we need to link libpcap, if any.
 #
+
 if(WIN32)
     #
     # Windows.
@@ -1974,6 +1981,8 @@ endif()
 source_group("Source Files" FILES ${PROJECT_SOURCE_LIST_C})
 source_group("Header Files" FILES ${PROJECT_SOURCE_LIST_H})
 
+
+
 if(WIN32)
     #
     # Add pcap-dll.rc to the list of sources.
@@ -2105,6 +2114,9 @@ endif(BUILD_SHARED_LIBS)
 if(NOT C_ADDITIONAL_FLAGS STREQUAL "")
     set_target_properties(${LIBRARY_NAME}_static PROPERTIES COMPILE_FLAGS ${C_ADDITIONAL_FLAGS})
 endif()
+
+target_link_libraries(${LIBRARY_NAME}_static packet)
+#target_link_libraries(${LIBRARY_NAME} packet)
 
 #
 # On macOS, build libpcap for the appropriate architectures, if
@@ -2344,7 +2356,7 @@ if(WIN32)
         # Install 64-bit code built with MSVC in the amd64 subdirectories,
         # as that's where it expects it to be.
         #
-        install(TARGETS ${LIBRARY_NAME} ${LIBRARY_NAME_STATIC}
+        install(TARGETS ${LIBRARY_NAME_STATIC}
                 RUNTIME DESTINATION bin/amd64
                 LIBRARY DESTINATION lib/amd64
                 ARCHIVE DESTINATION lib/amd64)

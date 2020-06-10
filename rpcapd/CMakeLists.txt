@@ -107,8 +107,9 @@ if(WIN32 OR ((CMAKE_USE_PTHREADS_INIT OR PTHREADS_FOUND) AND HAVE_CRYPT))
   endif()
 
   if(WIN32)
-    target_link_libraries(rpcapd ${LIBRARY_NAME}
+    target_link_libraries(rpcapd ${LIBRARY_NAME}_static
       ${RPCAPD_LINK_LIBRARIES} ${PCAP_LINK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(rpcapd ws2_32 atls Version Iphlpapi Setupapi)
   else(WIN32)
     target_link_libraries(rpcapd ${LIBRARY_NAME}_static
       ${RPCAPD_LINK_LIBRARIES} ${PCAP_LINK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
